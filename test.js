@@ -7,7 +7,9 @@ events.conf.update({
 })
 
 events
-    .add('assignment', 'bunman')
+    .add('assignment', 'bunman', {
+        run_at: new Date(Date.now() + 3600000)
+    })
     .then(console.log)
     .catch(console.error)
 events
@@ -28,13 +30,5 @@ events
     .catch(console.error)
 events
     .get('assignment', 'bunman')
-    .then(console.log)
-    .catch(console.error)
-events
-    .add()
-    .then(console.log)
-    .catch(console.error)
-events
-    .remove('wefwe', 'fjewi')
     .then(console.log)
     .catch(console.error)

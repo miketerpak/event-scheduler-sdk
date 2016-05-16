@@ -34,64 +34,9 @@ module.exports.add = function(slug, key, params) {
             .post([config.endpoint, slug, key].join('/'))
             .send(params)
             .end((err, res) => {
-                if (err) reject(err)
+                if (err) reject(err.response.body)
                 else if (res.body.error) reject(res.body.error)
-                else resolve(res.body)
-            })
-    })
-}
-
-module.exports.remove = function(slug, key) {
-    if (!config.endpoint) throw new Error('Missing event server endpoint in configuration')
-    return new Promise((resolve, reject) => {
-        if (!slug) return reject({
-            code: 400,
-            msg: 'Missing required parameter: slug'
-        })
-        
-        superagent
-            .del([config.endpoint, slug, key].join('/'))
-            .end((err, res) => {
-                if (err) reject(err)
-                else if (res.body.error) reject(res.body.error)
-                else resolve(res.body.result.deleted)
-            })
-    })
-}
-
-module.exports.update = function(slug, key, updates) {
-    if (!config.endpoint) throw new Error('Missing event server endpoint in configuration')
-    return new Promise((resolve, reject) => {
-        if (!slug) return reject({
-            code: 400,
-            msg: 'Missing required parameter: slug'
-        })
-        
-        superagent
-            .put([config.endpoint, slug, key].join('/'))
-            .send(updates)
-            .end((err, res) => {
-                if (err) reject(err)
-                else if (res.body.error) reject(res.body.error)
-                else resolve(res.body ? new Event(res.body) : null)
-            })
-    })
-}
-
-module.exports.get = function(slug, key) {
-    if (!config.endpoint) throw new Error('Missing event server endpoint in configuration')
-    return new Promise((resolve, reject) => {
-        if (!slug) return reject({
-            code: 400,
-            msg: 'Missing required parameter: slug'
-        })
-        
-        superagent
-            .get([config.endpoint, slug, key].join('/'))
-            .end((err, res) => {
-                if (err) reject(err)
-                else if (res.body.error) reject(res.body.error)
-                else resolve(res.body ? new Event(res.body) : null)
+                else resolve(new Event(res.body.result))
             })
     })
 }
@@ -114,4 +59,59 @@ module.exports.conf = {
             }
         }
     }
+}
+
+module.exports.get = function(slug, key) {
+    if (!config.endpoint) throw new Error('Missing event server endpoint in configuration')
+    return new Promise((resolve, reject) => {
+        if (!slug) return reject({
+            code: 400,
+            msg: 'Missing required parameter: slug'
+        })
+        
+        superagent
+            .get([config.endpoint, slug, key].join('/'))
+            .end((err, res) => {
+                if (err) reject(err.response.body.error)
+                else if (res.body.error) reject(res.body.error)
+                else resolve(res.body.result ? new Event(res.body.result) : null)
+            })
+    })
+}
+
+module.exports.remove = function(slug, key) {
+    if (!config.endpoint) throw new Error('Missing event server endpoint in configuration')
+    return new Promise((resolve, reject) => {
+        if (!slug) return reject({
+            code: 400,
+            msg: 'Missing required parameter: slug'
+        })
+        
+        superagent
+            .del([config.endpoint, slug, key].join('/'))
+            .end((err, res) => {
+                if (err) reject(err.response.body.error)
+                else if (res.body.error) reject(res.body.error)
+                else resolve(res.body.result.deleted)
+            })
+    })
+}
+
+module.exports.update = function(slug, key, updates) {
+    if (!config.endpoint) throw new Error('Missing event server endpoint in configuration')
+    return new Promise((resolve, reject) => {
+        if (!slug) return reject({
+            code: 400,
+            msg: 'Missing required parameter: slug'
+        })
+        
+        superagent
+            .put([config.endpoint, slug, key].join('/'))
+            .send(updates)
+            .end((err, res) => {
+                if (err) reject(err.response.body.error)
+                else if (res.body.error) reject(res.body.error)
+                else resolve(new Event(res.body.result))
+            })
+    })
 }
