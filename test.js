@@ -26,3 +26,15 @@ events
     .remove('assignment', 'bunman')
     .then(console.log)
     .catch(console.error)
+events
+    .get('assignment', 'bunman')
+    .then(console.log)
+    .catch(console.error)
+events
+    .add()
+    .then(console.log)
+    .catch(console.error)
+events
+    .remove('wefwe', 'fjewi')
+    .then(console.log)
+    .catch(console.error)
