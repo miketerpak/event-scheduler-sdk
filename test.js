@@ -3,7 +3,7 @@
 const events = require('./index')
 
 events.conf.update({
-    endpoint: 'ec2-54-174-49-161.compute-1.amazonaws.com:3000'
+    endpoint: ''
 })
 
 events
