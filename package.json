@@ -1,0 +1,28 @@
+{
+  "name": "event-sdk",
+  "version": "0.0.1",
+  "description": "SDK for interacting with event scheduling server",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miketerpak/event-scheduler-sdk.git"
+  },
+  "keywords": [
+    "event",
+    "schedule",
+    "trigger",
+    "sdk"
+  ],
+  "author": "miketerpak",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/miketerpak/event-scheduler-sdk/issues"
+  },
+  "dependencies": {
+    "superagent": "^1.8.3"
+  },
+  "homepage": "https://github.com/miketerpak/event-scheduler-sdk#readme"
+}
