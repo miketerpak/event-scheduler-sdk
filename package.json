@@ -10,12 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/miketerpak/event-scheduler-sdk.git"
   },
-  "keywords": [
-    "event",
-    "schedule",
-    "trigger",
-    "sdk"
-  ],
+  "keywords": [],
   "author": "miketerpak",
   "license": "MIT",
   "bugs": {

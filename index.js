@@ -22,7 +22,7 @@ function Event({
     this.payload = payload
 }
 
-module.exports.add = function(slug, key, params) {
+module.exports.add = function(slug, key, params, _trx) {
     if (!config.endpoint) throw new Error('Missing event server endpoint in configuration')
     return new Promise((resolve, reject) => {
         if (!slug) return reject({
@@ -30,13 +30,27 @@ module.exports.add = function(slug, key, params) {
             msg: 'Missing required parameter: slug'
         })
         
+        if (_trx) {
+            _trx.revert(() => {
+                this
+                    .remove(slug, key)
+                    .then()
+                    .catch(console.error)
+            })
+        }
+        
         superagent
             .post([config.endpoint, slug, key].join('/'))
             .send(params)
             .end((err, res) => {
                 if (err) reject(err.response.body)
                 else if (res.body.error) reject(res.body.error)
-                else resolve(new Event(res.body.result))
+                else {
+                    if (_trx) {
+                        
+                    }
+                    resolve(new Event(res.body.result))
+                }
             })
     })
 }
@@ -79,7 +93,7 @@ module.exports.get = function(slug, key) {
     })
 }
 
-module.exports.remove = function(slug, key) {
+module.exports.remove = function(slug, key, _trx) {
     if (!config.endpoint) throw new Error('Missing event server endpoint in configuration')
     return new Promise((resolve, reject) => {
         if (!slug) return reject({
@@ -87,23 +101,71 @@ module.exports.remove = function(slug, key) {
             msg: 'Missing required parameter: slug'
         })
         
-        superagent
-            .del([config.endpoint, slug, key].join('/'))
-            .end((err, res) => {
-                if (err) reject(err.response.body.error)
-                else if (res.body.error) reject(res.body.error)
-                else resolve(res.body.result.deleted)
-            })
+        if (!_trx) {
+            go()
+        } else {
+            this
+                .get(slug, key)
+                .then(sch => {
+                    if (!sch) return reject({
+                        code: 404,
+                        msg: 'Schedule not found'
+                    })
+                    
+                    _trx.revert(() => {
+                        this
+                            .add(slug, key, sch)
+                            .then()
+                            .catch(console.error)
+                    })
+                    
+                    go()
+                })
+                .catch(reject)
+        }
+        
+        function go() {
+            superagent
+                .del([config.endpoint, slug, key].join('/'))
+                .end((err, res) => {
+                    if (err) reject(err.response.body.error)
+                    else if (res.body.error) reject(res.body.error)
+                    else resolve(res.body.result.deleted)
+                })
+        }
     })
 }
 
-module.exports.update = function(slug, key, updates) {
+module.exports.update = function(slug, key, updates, _trx) {
     if (!config.endpoint) throw new Error('Missing event server endpoint in configuration')
     return new Promise((resolve, reject) => {
         if (!slug) return reject({
             code: 400,
             msg: 'Missing required parameter: slug'
         })
+        
+        if (!_trx) {
+            go()
+        } else {
+            this
+                .get(slug, key)
+                .then(sch => {
+                    if (!sch) return reject({
+                        code: 404,
+                        msg: 'Schedule not found'
+                    })
+                    
+                    _trx.revert(() => {
+                        this
+                            .update(slug, key, sch)
+                            .then()
+                            .catch(console.error)
+                    })
+                    
+                    go()
+                })
+                .catch(reject)
+        }
         
         superagent
             .put([config.endpoint, slug, key].join('/'))
