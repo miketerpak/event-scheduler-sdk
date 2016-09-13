@@ -130,7 +130,7 @@ class Scheduler {
         }
 
         return superagent
-            .get([config.endpoint, slug, key].join('/'))
+            .get([this.endpoint, slug, key].join('/'))
             .endAsync()
             .then(res => new Event(res.body.result))
             .catch(err => Promise.reject(SchedulerError(err)))
@@ -152,7 +152,7 @@ class Scheduler {
         }
 
         return superagent
-            .del([config.endpoint, slug, key].join('/'))
+            .del([this.endpoint, slug, key].join('/'))
             .endAsync()
             .then(res => res.body.result.deleted)
             .catch(err => Promise.reject(SchedulerError(err)))
@@ -175,7 +175,7 @@ class Scheduler {
         }
 
         return superagent
-            .put([config.endpoint, slug, key].join('/'))
+            .put([this.endpoint, slug, key].join('/'))
             .send(updates)
             .endAsync()
             .then(res => new Event(res.body.result))
