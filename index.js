@@ -111,7 +111,7 @@ class Scheduler {
             .send(params)
             .endAsync()
             .then(res => new Event(res.body.result))
-            .catch(err => Promise.reject(SchedulerError(err)))
+            .catch(err => Promise.reject(new SchedulerError(err)))
     }
 
     /**
@@ -133,7 +133,7 @@ class Scheduler {
             .get([this.endpoint, slug, key].join('/'))
             .endAsync()
             .then(res => new Event(res.body.result))
-            .catch(err => Promise.reject(SchedulerError(err)))
+            .catch(err => Promise.reject(new SchedulerError(err)))
     }
 
     /**
@@ -155,7 +155,7 @@ class Scheduler {
             .del([this.endpoint, slug, key].join('/'))
             .endAsync()
             .then(res => res.body.result.deleted)
-            .catch(err => Promise.reject(SchedulerError(err)))
+            .catch(err => Promise.reject(new SchedulerError(err)))
     }
     
     /**
@@ -179,7 +179,7 @@ class Scheduler {
             .send(updates)
             .endAsync()
             .then(res => new Event(res.body.result))
-            .catch(err => SchedulerError(err))
+            .catch(err => Promise.reject(new SchedulerError(err)))
     }
 }
 
