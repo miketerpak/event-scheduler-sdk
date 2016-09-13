@@ -1,9 +1,10 @@
 {
   "name": "event-sdk",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "SDK for interacting with event scheduling server",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "node test.js"
   },
   "repository": {
@@ -17,6 +18,7 @@
     "url": "https://github.com/miketerpak/event-scheduler-sdk/issues"
   },
   "dependencies": {
+    "bluebird": "^3.4.6",
     "superagent": "^1.8.3"
   },
   "homepage": "https://github.com/miketerpak/event-scheduler-sdk#readme"
