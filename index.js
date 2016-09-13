@@ -7,14 +7,16 @@ Promise.promisifyAll(superagent)
 
 // Errors relating to event-related errors
 class EventError extends Error {
-    constructor() {
-        super('EventError')
+    constructor(message) {
+        super(message)
+        this.name = 'EventError'
     }
 }
 // Errors relating to the scheduling server
 class SchedulerError extends Error {
-    constructor() {
-        super('SchedulerError')
+    constructor(message) {
+        super(message)
+        this.name = 'SchedulerError'
     }
 }
 
@@ -131,7 +133,25 @@ class Scheduler {
             .get([this.endpoint, slug, key].join('/'))
             .endAsync()
             .then(res => new Event(res.body.result))
-            .catch(err => Promise.reject(new SchedulerError(err)))
+            .catch(console.error)
+    }
+
+    /**
+     * Fetch a list of events
+     * 
+     * @param slug {String} optional
+     * @param before {Date|Integer} optional
+     * @param after {Date|Integer} optional
+     * @param failed {Boolean} optional
+     * 
+     * @returns {Promise}
+     */
+    list({ slug, before, after, failed } = {}) {
+        return superagent
+            .get(this.endpoint + '/list')
+            .endAsync()
+            .then(res => res.body.result.map(e => new Event(e)))
+            .catch(console.error)
     }
 
     /**
