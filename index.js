@@ -8,15 +8,13 @@ Promise.promisifyAll(superagent)
 // Errors relating to event-related errors
 class EventError extends Error {
     constructor() {
-        super(...arguments)
-        this.name = 'EventError'
+        super('EventError')
     }
 }
 // Errors relating to the scheduling server
 class SchedulerError extends Error {
     constructor() {
-        super(...arguments)
-        this.name = 'SchedulerError'
+        super('SchedulerError')
     }
 }
 
