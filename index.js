@@ -86,8 +86,8 @@ class Scheduler {
      * @param options.host {String} optional, default 'localhost'
      * @param options.port {Integer} optional, default 5665
      */
-    constructor({ host = 'localhost', port = 5665 } = {}) {
-        this.endpoint = `http://${host}:${port}`
+    constructor({ endpoint, host = 'localhost', port = 5665 } = {}) {
+        this.endpoint = endpoint || `http://${host}:${port}`
     }
 
     /**
