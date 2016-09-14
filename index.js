@@ -20,6 +20,29 @@ class SchedulerError extends Error {
     }
 }
 
+/**
+ * Error handler for interacting with the Scheduler server
+ * 
+ * @param err {Error|Object}
+ * 
+ * @returns {Promise}
+ */
+function errorHandler(_error) {
+    let error = _error
+
+    if (_error instanceof Error) {
+        if (_error.response instanceof superagent.Response) {
+            error = new EventError(_error.response.body.error.message)
+            error.status = _error.response.statusCode || 500
+        } else {
+            error = new SchedulerError(_error.message)
+            error.status = _error.status || _error.statusCode || 500
+        }
+    }
+
+    throw error
+}
+
 class Event {
 
     /**
@@ -32,7 +55,7 @@ class Event {
      * @param options.recurring {false|Object} see "recurring"
      * @param options.failed {Boolean} optional, default false
      * @param options.failed_code {null|Integer} optional, default null
-     * @param options.failed_reason {null|String|Object} optional, default null
+     * @param options.failed_response {null|String|Object} optional, default null
      * @param options.request {Object}
      * @param options.request.host {String}
      * @param options.request.protocol {String} optional, default 'http:'
@@ -58,7 +81,7 @@ class Event {
         recurring = false,
         failed = false,
         failed_code = null,
-        failed_reason = null
+        failed_response = null
     } = {}) {
         this.slug = slug
         this.key = key
@@ -75,7 +98,7 @@ class Event {
         this.recurring = recurring
         this.failed = failed
         this.failed_code = failed_code
-        this.failed_reason = failed_reason
+        this.failed_response = failed_response
     }
 }
 
@@ -110,8 +133,8 @@ class Scheduler {
             .post([this.endpoint, slug, key].join('/'))
             .send(params)
             .endAsync()
-            .then(res => new Event(res.body.result))
-            .catch(err => Promise.reject(new SchedulerError(err)))
+            .then(res => res.body.result ? new Event(res.body.result) : null)
+            .catch(errorHandler)
     }
 
     /**
@@ -132,8 +155,8 @@ class Scheduler {
         return superagent
             .get([this.endpoint, slug, key].join('/'))
             .endAsync()
-            .then(res => new Event(res.body.result))
-            .catch(console.error)
+            .then(res => res.body.result ? new Event(res.body.result) : null)
+            .catch(errorHandler)
     }
 
     /**
@@ -151,7 +174,7 @@ class Scheduler {
             .get(this.endpoint + '/list')
             .endAsync()
             .then(res => res.body.result.map(e => new Event(e)))
-            .catch(console.error)
+            .catch(errorHandler)
     }
 
     /**
@@ -173,7 +196,7 @@ class Scheduler {
             .del([this.endpoint, slug, key].join('/'))
             .endAsync()
             .then(res => res.body.result.deleted)
-            .catch(err => Promise.reject(new SchedulerError(err)))
+            .catch(errorHandler)
     }
     
     /**
@@ -196,8 +219,8 @@ class Scheduler {
             .put([this.endpoint, slug, key].join('/'))
             .send(updates)
             .endAsync()
-            .then(res => new Event(res.body.result))
-            .catch(err => Promise.reject(new SchedulerError(err)))
+            .then(res => res.body.result ? new Event(res.body.result) : null)
+            .catch(errorHandler)
     }
 }
 
