@@ -59,11 +59,12 @@ class Event {
      * @param options.request {Object}
      * @param options.request.host {String}
      * @param options.request.protocol {String} optional, default 'http:'
-     * @param options.request.port {Integer} optional, default 80
+     * @param options.request.port {Integer} optional
      * @param options.request.headers {Object}
      * @param options.request.method {String} optional, default 'GET'
      * @param options.request.path {String} optional, default '/'
-     * @param options.request.data {String|Object}
+     * @param options.request.body {Object}
+     * @param options.request.querystring {Object}
      */
     constructor({
         slug,
@@ -75,7 +76,8 @@ class Event {
             headers = {},
             method = 'GET',
             path = '/',
-            data
+            body,
+            querystring
         } = {},
         run_at,
         recurring = false,
@@ -92,7 +94,8 @@ class Event {
             headers,
             method,
             path: path[0] === '/' ? path : '/' + path,
-            data
+            body,
+            querystring
         },
         this.run_at = new Date(run_at)
         this.recurring = recurring
