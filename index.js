@@ -170,8 +170,14 @@ class Scheduler {
      * @returns {Promise}
      */
     list({ slug, before, after, failed } = {}) {
+        let query = ''
+        if (slug) query += 'slug=' + encodeURIComponent(slug) + '&'
+        if (before) query += 'before=' + encodeURIComponent(new Date(before).toISOString()) + '&'
+        if (after) query += 'after=' + encodeURIComponent(new Date(after).toISOString()) + '&'
+        if (typeof failed === 'boolean') query += 'failed=' + (failed ? 'true' : 'false') + '&'
+        if (typeof failed === 'string') query += 'failed=' + failed.toLowerCase() + '&'
         return superagent
-            .get(this.endpoint + '/list')
+            .get(this.endpoint + '/list?' + query)
             .endAsync()
             .then(res => res.body.result.map(e => new Event(e)))
             .catch(errorHandler)
