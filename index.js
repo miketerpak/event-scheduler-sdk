@@ -72,7 +72,7 @@ class Event {
         request: {
             host,
             protocol = 'http:',
-            port = 80,
+            port,
             headers = {},
             method = 'GET',
             path = '/',
@@ -154,6 +154,11 @@ class Scheduler {
             err.status = 400
             return Promise.reject(err)
         }
+        if (slug instanceof Event) {
+            let _event = slug
+            slug = _event.slug
+            key = _event.key
+        }
 
         return superagent
             .get([this.endpoint, slug, key].join('/'))
@@ -192,6 +197,10 @@ class Scheduler {
      * @param slug {String}
      * @param key {String} optional
      * 
+     * OR
+     * 
+     * @param event {Event}
+     * 
      * @returns {Promise}
      */
     remove(slug, key = '') {
@@ -199,6 +208,11 @@ class Scheduler {
             let err = new EventError('Missing required parameter: slug')
             err.status = 400
             return Promise.reject(err)
+        }
+        if (slug instanceof Event) {
+            let _event = slug
+            slug = _event.slug
+            key = _event.key
         }
 
         return superagent
@@ -215,6 +229,11 @@ class Scheduler {
      * @param key {String} optional
      * @param updates {Object} see "new Event"
      * 
+     * OR
+     * 
+     * @param event {Event}
+     * @param updates {Object} see "new Event"
+     * 
      * @returns {Promise}
      */
     update(slug, key = '', updates = {}) {
@@ -222,6 +241,12 @@ class Scheduler {
             let err = new EventError('Missing required parameter: slug')
             err.status = 400
             return Promise.reject(err)
+        }
+        if (slug instanceof Event) {
+            let _event = slug
+            updates = key
+            slug = _event.slug
+            key = _event.key
         }
 
         return superagent
