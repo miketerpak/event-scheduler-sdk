@@ -51,7 +51,7 @@ class Event {
      * @param options {Object}
      * @param options.slug {String}
      * @param options.key {String} optional
-     * @param options.run_at {Date|Integer}
+     * @param options.run_at {Integer}
      * @param options.recurring {false|Object} see "recurring"
      * @param options.failed_code {null|Integer} optional, default null
      * @param options.failed_response {null|String|Object} optional, default null
@@ -83,7 +83,7 @@ class Event {
             method,
             body
         },
-        this.run_at = new Date(run_at)
+        this.run_at = run_at instanceof Date ? run_at.getTime() : parseInt(run_at, 10)
         this.recurring = recurring
         this.failed_code = failed_code
         this.failed_response = failed_response
@@ -116,6 +116,8 @@ class Scheduler {
             err.status = 400
             return Promise.reject(err)
         }
+
+        if (params.run_at instanceof Date) params.run_at = params.run_at.getTime()
 
         return superagent
             .post([this.endpoint, slug, key].join('/'))
@@ -164,9 +166,9 @@ class Scheduler {
      */
     list({ slug, before, after, failed } = {}) {
         let query = ''
-        if (slug) query += 'slug=' + encodeURIComponent(slug) + '&'
-        if (before) query += 'before=' + encodeURIComponent(new Date(before).toISOString()) + '&'
-        if (after) query += 'after=' + encodeURIComponent(new Date(after).toISOString()) + '&'
+        if (slug) query += 'slug=' + slug + '&'
+        if (before) query += 'before=' + new Date(before).getTime() + '&'
+        if (after) query += 'after=' + new Date(after).getTime() + '&'
         if (typeof failed === 'boolean') query += 'failed=' + (failed ? 'true' : 'false') + '&'
         if (typeof failed === 'string') query += 'failed=' + failed.toLowerCase() + '&'
         return superagent
@@ -233,6 +235,7 @@ class Scheduler {
             slug = _event.slug
             key = _event.key
         }
+        if (updates.run_at instanceof Date) updates.run_at = updates.run_at.getTime()
 
         return superagent
             .put([this.endpoint, slug, key].join('/'))
