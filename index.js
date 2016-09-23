@@ -53,7 +53,6 @@ class Event {
      * @param options.key {String} optional
      * @param options.run_at {Date|Integer}
      * @param options.recurring {false|Object} see "recurring"
-     * @param options.failed {Boolean} optional, default false
      * @param options.failed_code {null|Integer} optional, default null
      * @param options.failed_response {null|String|Object} optional, default null
      * @param options.request {Object}
@@ -61,7 +60,6 @@ class Event {
      * @param options.request.headers {Object}
      * @param options.request.method {String} optional, default 'GET'
      * @param options.request.body {Object}
-     * @param options.request.querystring {Object}
      */
     constructor({
         slug,
@@ -70,13 +68,10 @@ class Event {
             href,
             headers = {},
             method = 'GET',
-            path = '/',
-            body,
-            querystring
+            body
         } = {},
         run_at,
         recurring = false,
-        failed = false,
         failed_code = null,
         failed_response = null
     } = {}) {
@@ -86,12 +81,10 @@ class Event {
             href,
             headers,
             method,
-            body,
-            querystring
+            body
         },
         this.run_at = new Date(run_at)
         this.recurring = recurring
-        this.failed = failed
         this.failed_code = failed_code
         this.failed_response = failed_response
     }
