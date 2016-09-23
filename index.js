@@ -57,12 +57,9 @@ class Event {
      * @param options.failed_code {null|Integer} optional, default null
      * @param options.failed_response {null|String|Object} optional, default null
      * @param options.request {Object}
-     * @param options.request.host {String}
-     * @param options.request.protocol {String} optional, default 'http:'
-     * @param options.request.port {Integer} optional
+     * @param options.request.href {String}
      * @param options.request.headers {Object}
      * @param options.request.method {String} optional, default 'GET'
-     * @param options.request.path {String} optional, default '/'
      * @param options.request.body {Object}
      * @param options.request.querystring {Object}
      */
@@ -70,9 +67,7 @@ class Event {
         slug,
         key = '',
         request: {
-            host,
-            protocol = 'http:',
-            port,
+            href,
             headers = {},
             method = 'GET',
             path = '/',
@@ -88,12 +83,9 @@ class Event {
         this.slug = slug
         this.key = key
         this.request = {
-            host,
-            protocol: protocol.substr(-1) === ':' ? protocol : protocol + ':',
-            port,
+            href,
             headers,
             method,
-            path: path[0] === '/' ? path : '/' + path,
             body,
             querystring
         },
